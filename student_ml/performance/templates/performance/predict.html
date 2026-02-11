@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Predict Student Performance</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7f8;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            padding: 2rem 3rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            text-align: center;
+            width: 450px;
+            max-width: 90vw;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+        }
+        .form-group {
+            margin-bottom: 1rem;
+            text-align: left;
+        }
+        label {
+            display: block;
+            margin: 0.5rem 0 0.2rem;
+            font-weight: bold;
+            color: #555;
+        }
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 1rem;
+        }
+        input[type="checkbox"] {
+            margin-right: 0.5rem;
+        }
+        button {
+            background-color: #007bff;
+            border: none;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            width: 100%;
+            margin-top: 1rem;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .result.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            margin-top: 1rem;
+            color: red;
+            font-weight: bold;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            padding: 1rem;
+            border-radius: 4px;
+        }
+        
+        /* Pattern Classification Styles */
+        .pattern-alert {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            border-radius: 4px;
+            text-align: left;
+        }
+        .pattern-time_paradox {
+            background-color: #f8d7da;
+            border: 2px solid #dc3545;
+            color: #721c24;
+        }
+        .pattern-stress {
+            background-color: #fff3cd;
+            border: 2px solid #ffc107;
+            color: #856404;
+        }
+        .pattern-burnout_risk {
+            background-color: #f8d7da;
+            border: 2px solid #fd7e14;
+            color: #721c24;
+        }
+        .pattern-overachiever {
+            background-color: #d1ecf1;
+            border: 2px solid #17a2b8;
+            color: #0c5460;
+        }
+        .pattern-normal {
+            background-color: #d4edda;
+            border: 2px solid #28a745;
+            color: #155724;
+        }
+        
+        .pattern-title {
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .pattern-message {
+            margin-bottom: 0.5rem;
+        }
+        .pattern-recommendation {
+            font-style: italic;
+            margin-top: 0.5rem;
+            padding-top: 0.5rem;
+            border-top: 1px solid rgba(0,0,0,0.1);
+        }
+        
+        .pattern-icon {
+            font-size: 1.2rem;
+        }
+        
+        .real-time-feedback {
+            margin-top: 0.5rem;
+            padding: 0.5rem;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            display: none;
+        }
+        
+        .hours-warning {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+        }
+        
+        .prediction-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #007bff;
+            margin: 1rem 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Predict Student Performance</h1>
+        <form method="post" id="predictionForm">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="hours_studied">Hours Studied</label>
+                <input type="number" step="any" name="hours_studied" id="hours_studied" required min="0" max="16">
+                <div id="hoursWarning" class="real-time-feedback hours-warning"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="previous_scores">Previous Scores</label>
+                <input type="number" step="any" name="previous_scores" id="previous_scores" required min="0" max="100">
+            </div>
+
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" name="extracurricular" id="extracurricular">
+                    Participates in Extracurricular Activities
+                </label>
+            </div>
+
+            <div class="form-group">
+                <label for="sleep_hours">Sleep Hours</label>
+                <input type="number" step="any" name="sleep_hours" id="sleep_hours" required min="4" max="12">
+                <div id="sleepWarning" class="real-time-feedback hours-warning"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="sample_papers">Sample Papers Taken</label>
+                <input type="number" step="any" name="sample_papers" id="sample_papers" required min="0" max="20">
+            </div>
+
+            <button type="submit">Predict Performance</button>
+        </form>
+
+        <!-- Pattern Classification Display -->
+        {% if pattern_error %}
+            <div class="pattern-alert pattern-{{ study_pattern }}">
+                <div class="pattern-title">
+                    <span class="pattern-icon">⚠️</span>
+                    Pattern Detected: {{ study_pattern|title }}
+                </div>
+                <div class="pattern-message">{{ pattern_message }}</div>
+                <div class="pattern-recommendation">
+                    <strong>Recommendation:</strong> {{ pattern_recommendation }}
+                </div>
+            </div>
+        {% endif %}
+
+        {% if prediction %}
+            <div class="result success">
+                <div class="pattern-alert pattern-{{ study_pattern }}">
+                    <div class="pattern-title">
+                        <span class="pattern-icon">
+                            {% if study_pattern == 'time_paradox' %}🚨
+                            {% elif study_pattern == 'stress' %}⚠️
+                            {% elif study_pattern == 'burnout_risk' %}🔥
+                            {% elif study_pattern == 'overachiever' %}⭐
+                            {% else %}✅
+                            {% endif %}
+                        </span>
+                        Pattern: {{ study_pattern|title }}
+                    </div>
+                    <div class="pattern-message">{{ pattern_message }}</div>
+                    {% if pattern_recommendation %}
+                    <div class="pattern-recommendation">
+                        <strong>Recommendation:</strong> {{ pattern_recommendation }}
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="prediction-value">Predicted Performance Index: {{ prediction }}</div>
+            </div>
+        {% endif %}
+
+        {% if error %}
+            <div class="error">
+                <strong>Error:</strong> {{ error }}
+            </div>
+        {% endif %}
+    </div>
+
+    <script>
+        // Real-time validation and feedback
+        const hoursStudied = document.getElementById('hours_studied');
+        const sleepHours = document.getElementById('sleep_hours');
+        const hoursWarning = document.getElementById('hoursWarning');
+        const sleepWarning = document.getElementById('sleepWarning');
+        const form = document.getElementById('predictionForm');
+
+        function checkTimeParadox() {
+            const study = parseFloat(hoursStudied.value) || 0;
+            const sleep = parseFloat(sleepHours.value) || 0;
+            const total = study + sleep;
+
+            // Clear previous warnings
+            hoursWarning.style.display = 'none';
+            sleepWarning.style.display = 'none';
+
+            if (total > 24) {
+                hoursWarning.innerHTML = `⚠️ Time Paradox Alert: ${study}h study + ${sleep}h sleep = ${total}h total exceeds 24 hours!`;
+                hoursWarning.style.display = 'block';
+                return false;
+            } else if (total > 20) {
+                hoursWarning.innerHTML = `⚠️ High Load Warning: ${study}h study + ${sleep}h sleep = ${total}h total. Very little free time.`;
+                hoursWarning.style.display = 'block';
+            } else if (study > 14) {
+                hoursWarning.innerHTML = `⚠️ Stress Risk: Studying ${study}h per day may lead to burnout.`;
+                hoursWarning.style.display = 'block';
+            } else if (sleep < 6 && study > 10) {
+                sleepWarning.innerHTML = `⚠️ Burnout Risk: High study load (${study}h) with low sleep (${sleep}h).`;
+                sleepWarning.style.display = 'block';
+            }
+            return true;
+        }
+
+        function validateForm() {
+            const study = parseFloat(hoursStudied.value) || 0;
+            const sleep = parseFloat(sleepHours.value) || 0;
+            const total = study + sleep;
+
+            if (total > 24) {
+                alert('Time Paradox detected! You cannot study and sleep more than 24 hours in a day. Please adjust your values.');
+                return false;
+            }
+            return true;
+        }
+
+        // Add event listeners for real-time feedback
+        hoursStudied.addEventListener('input', checkTimeParadox);
+        sleepHours.addEventListener('input', checkTimeParadox);
+        form.addEventListener('submit', validateForm);
+
+        // Initial check
+        checkTimeParadox();
+    </script>
+</body>
+</html>

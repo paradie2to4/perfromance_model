@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Train Student Performance Model</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7f8;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            background: white;
+            padding: 2rem 3rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            text-align: center;
+            width: 400px;
+            max-width: 90vw;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+        }
+        .model-info {
+            background-color: #e7f3ff;
+            border: 1px solid #b3d9ff;
+            border-radius: 4px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+        .model-info h3 {
+            margin-top: 0;
+            color: #0066cc;
+        }
+        .model-info ul {
+            margin: 0.5rem 0;
+            padding-left: 1.5rem;
+        }
+        .model-info li {
+            margin-bottom: 0.3rem;
+            color: #555;
+        }
+        button {
+            background-color: #007bff;
+            border: none;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        p.message {
+            color: #155724;
+            margin-bottom: 1rem;
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            padding: 1rem;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .pattern-examples {
+            margin-top: 1.5rem;
+            text-align: left;
+            font-size: 0.9rem;
+        }
+        .pattern-examples h4 {
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+        .pattern-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.3rem;
+            padding: 0.3rem;
+            border-radius: 3px;
+        }
+        .pattern-normal { background-color: #d4edda; }
+        .pattern-stress { background-color: #fff3cd; }
+        .pattern-time_paradox { background-color: #f8d7da; }
+        .pattern-icon {
+            margin-right: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎓 Train Student Performance Model</h1>
+        
+        <div class="model-info">
+            <h3>Model Features</h3>
+            <ul>
+                <li><strong>Hours Studied:</strong> Daily study time (0-16 hours)</li>
+                <li><strong>Previous Scores:</strong> Academic history (0-100)</li>
+                <li><strong>Extracurricular:</strong> Participation in activities</li>
+                <li><strong>Sleep Hours:</strong> Daily sleep (4-12 hours)</li>
+                <li><strong>Sample Papers:</strong> Practice papers completed (0-20)</li>
+            </ul>
+        </div>
+
+        <div class="pattern-examples">
+            <h4>🔍 Pattern Recognition:</h4>
+            <div class="pattern-item pattern-normal">
+                <span class="pattern-icon">✅</span>
+                <span><strong>Normal:</strong> Balanced study/sleep patterns</span>
+            </div>
+            <div class="pattern-item pattern-stress">
+                <span class="pattern-icon">⚠️</span>
+                <span><strong>Stress:</strong> High study, low rest</span>
+            </div>
+            <div class="pattern-item pattern-time_paradox">
+                <span class="pattern-icon">🚨</span>
+                <span><strong>Time Paradox:</strong> Impossible hour combinations</span>
+            </div>
+        </div>
+
+        {% if message %}
+            <p class="message">{{ message }}</p>
+        {% endif %}
+        
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit">🚀 Start Training</button>
+        </form>
+    </div>
+</body>
+</html>

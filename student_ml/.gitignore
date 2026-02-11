@@ -1,0 +1,20 @@
+# Python cache and compiled files
+__pycache__/
+*.py[cod]
+
+# SQLite database
+db.sqlite3
+*.sqlite3
+
+# Dataset (do not commit large CSVs)
+Student_Performance.csv
+
+# Environment and IDE
+.env
+venv/
+env/
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
